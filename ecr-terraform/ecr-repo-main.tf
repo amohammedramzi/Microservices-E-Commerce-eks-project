@@ -7,7 +7,7 @@ locals {
     "emailservice",
     "checkoutservice",
     "recommendationservice",
-    "frontend",
+    "frontend",  
     "paymentservice",
     "productcatalogservice",
     "cartservice",
