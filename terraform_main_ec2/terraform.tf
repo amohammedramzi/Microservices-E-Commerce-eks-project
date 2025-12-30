@@ -6,11 +6,6 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket = "arumullaaluruu1"
-    key    = "ec2/terraform.tfstate"
-    region = "us-east-1"
-  }
 
   required_version = ">= 1.6.3"
 }
