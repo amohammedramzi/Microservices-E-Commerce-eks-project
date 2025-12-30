@@ -45,7 +45,22 @@ for SERVICE in "${SERVICES[@]}"; do
 
     # Build the image
     echo "Building ${SERVICE}..."
-    docker build -t ${SERVICE}:latest ${SERVICE_DIR}
+    
+    DOCKERFILE="${SERVICE_DIR}/Dockerfile"
+    CONTEXT="${SERVICE_DIR}"
+    
+    if [ ! -f "$DOCKERFILE" ]; then
+        if [ -f "${SERVICE_DIR}/src/Dockerfile" ]; then
+            DOCKERFILE="${SERVICE_DIR}/src/Dockerfile"
+            CONTEXT="${SERVICE_DIR}/src"
+            echo "ℹ️  Using nested Dockerfile and context for ${SERVICE} at ${CONTEXT}"
+        else
+            echo "❌ Dockerfile not found for ${SERVICE}. Skipping push."
+            continue
+        fi
+    fi
+
+    docker build -t ${SERVICE}:latest -f ${DOCKERFILE} ${CONTEXT}
 
     if [ $? -ne 0 ]; then
         echo "❌ Build failed for ${SERVICE}. Skipping push."

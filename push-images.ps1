@@ -43,7 +43,24 @@ foreach ($SERVICE in $SERVICES) {
 
     # Build the image
     Write-Host "Building ${SERVICE}..."
-    docker build -t "${SERVICE}:latest" $SERVICE_DIR
+    
+    $DOCKERFILE = Join-Path $SERVICE_DIR "Dockerfile"
+    $CONTEXT = $SERVICE_DIR
+    
+    if (-not (Test-Path $DOCKERFILE)) {
+        $NESTED_DOCKER = Join-Path $SERVICE_DIR "src\Dockerfile"
+        if (Test-Path $NESTED_DOCKER) {
+            $DOCKERFILE = $NESTED_DOCKER
+            $CONTEXT = Join-Path $SERVICE_DIR "src"
+            Write-Host "ℹ️  Using nested Dockerfile and context for ${SERVICE} at ${CONTEXT}" -ForegroundColor Cyan
+        }
+        else {
+            Write-Host "❌ Dockerfile not found for ${SERVICE}. Skipping push." -ForegroundColor Red
+            continue
+        }
+    }
+
+    docker build -t "${SERVICE}:latest" -f $DOCKERFILE $CONTEXT
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "❌ Build failed for ${SERVICE}. Skipping push." -ForegroundColor Red
