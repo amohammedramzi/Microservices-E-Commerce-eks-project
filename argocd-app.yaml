@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: microservices-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/amohammedramzi/Microservices-E-Commerce-eks-project.git
+    targetRevision: master   # Using master branch to avoid "not our ref" errors with local commits
+    path: kubernetes-files
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
